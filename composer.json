@@ -70,6 +70,13 @@
             "docroot/profiles/contrib/{$name}": ["type:drupal-profile"],
             "docroot/themes/contrib/{$name}": ["type:drupal-theme"],
             "drush/contrib/{$name}": ["type:drupal-drush"]
+        },
+        "enable-patching": true,
+        "patches": {
+            "drupal/core": {
+                "2118743 - Twig debug output does not display all suggestions when an array of suggestions is passed to #theme": "https://www.drupal.org/files/issues/twig_debug_output_does-2118743-93.patch",
+                "Redirect to install.php on empty DB": "https://www.drupal.org/files/issues/728702-163.patch"
+            }
         }
     }
 }
