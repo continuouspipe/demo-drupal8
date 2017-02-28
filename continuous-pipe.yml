@@ -62,6 +62,8 @@ tasks:
       services:
         web:
           specification:
+            accessibility:
+              from_external: true
             volumes:
               - type: persistent
                 name: web-public-files-volume
