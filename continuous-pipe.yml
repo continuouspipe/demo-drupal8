@@ -1,0 +1,69 @@
+variables:
+  - name: CP_ENVIRONMENT
+    value: prod
+
+tasks:
+  images:
+    build:
+      services:
+        web:
+          image: ${IMAGE}
+          naming_strategy: sha1
+
+  db_deployment:
+    deploy:
+      cluster: ${CLUSTER}
+      environment:
+        name: '"demo-drupal8-" ~ code_reference.branch'
+      services:
+        database:
+          specification:
+            volumes:
+              - type: persistent
+                name: database-volume
+                capacity: 5Gi
+                storage_class: default
+            volume_mounts:
+              - name: database-volume
+                mount_path: /var/lib/mysql
+            command:
+              - /usr/local/bin/docker-entrypoint.sh
+              - mysqld
+              - --ignore-db-dir=lost+found
+              - --max_allowed_packet=128M
+            ports:
+              - 3306
+            resources:
+              requests:
+                cpu: 50m
+                memory: 250Mi
+              limits:
+                cpu: 500m
+                memory: 2Gi
+            environment_variables:
+              - name: MYSQL_ROOT_PASSWORD
+                value: ${DATABASE_ROOT_PASSWORD}
+              - name: MYSQL_USER
+                value: ${DRUPAL_DATABASE_USERNAME}
+              - name: MYSQL_PASSWORD
+                value: ${DRUPAL_DATABASE_PASSWORD}
+              - name: MYSQL_DATABASE
+                value: ${DRUPAL_DATABASE_NAME}
+          deployment_strategy:
+              readiness_probe:
+                 type: tcp
+                 port: 3306
+
+pipelines:
+  - name: Remote development
+    condition: code_reference.branch matches "/^cpdev/"
+    tasks: &default_tasks
+      - images
+      - db_deployment
+    variables:
+      - name: CP_ENVIRONMENT
+        value: dev
+
+  - name: Production
+    condition: 'not(code_reference.branch matches "/^cpdev/")'
+    tasks: *default_tasks

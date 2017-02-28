@@ -1,0 +1,38 @@
+version: '2'
+services:
+  web:
+    build:
+      context: .
+      args:
+        - GITHUB_TOKEN
+        - CODE_OWNER=build
+        - CODE_GROUP=build
+        - APP_USER=www-data
+        - APP_GROUP=www-data
+    links:
+      - database
+    environment:
+      - GITHUB_TOKEN
+      - WEB_HTTP=true
+      - WEB_HTTPS=false
+      - DRUPAL_HASH_SALT=sosecret
+      - DRUPAL_DATABASE_NAME=drupaldb
+      - DRUPAL_DATABASE_USERNAME=drupal
+      - DRUPAL_DATABASE_PASSWORD=drupal
+      - DRUPAL_DATABASE_HOST=database
+      - DRUPAL_DATABASE_PORT=3306
+      - DEVELOPMENT_MODE=0
+      - DRUPAL_ADMIN_USERNAME=drupaluser
+      - DRUPAL_ADMIN_PASSWORD=drupalpass
+    expose:
+      - 80
+
+  database:
+    image: quay.io/continuouspipe/mysql5.6:v1.0
+    environment:
+      MYSQL_ROOT_PASSWORD: drupal
+      MYSQL_DATABASE: drupaldb
+      MYSQL_USER: drupal
+      MYSQL_PASSWORD: drupal
+    expose:
+      - 3306
