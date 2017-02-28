@@ -7,7 +7,7 @@ tasks:
     build:
       services:
         web:
-          image: ${IMAGE}
+          image: ${IMAGE_NAME}
           naming_strategy: sha1
 
   db_deployment:
@@ -54,12 +54,63 @@ tasks:
                  type: tcp
                  port: 3306
 
+  web_deployment:
+    deploy:
+      cluster: ${CLUSTER}
+      environment:
+        name: '"demo-drupal8-" ~ code_reference.branch'
+      services:
+        web:
+          specification:
+            volumes:
+              - type: persistent
+                name: web-public-files-volume
+                capacity: 5Gi
+                storage_class: default
+            volume_mounts:
+              - name: web-public-files-volume
+                mount_path: /app/docroot/sites/default/files
+            environment_variables: &default_web_variables
+              - name: DRUPAL_DATABASE_NAME
+                value: ${DRUPAL_DATABASE_NAME}
+              - name: DRUPAL_DATABASE_USERNAME
+                value: ${DRUPAL_DATABASE_USERNAME}
+              - name: DRUPAL_DATABASE_PASSWORD
+                value: ${DRUPAL_DATABASE_PASSWORD}
+              - name: DRUPAL_DATABASE_PREFIX
+                value: ${DRUPAL_DATABASE_PREFIX}
+              - name: DRUPAL_DATABASE_HOST
+                value: ${DRUPAL_DATABASE_HOST}
+              - name: DRUPAL_DATABASE_PORT
+                value: ${DRUPAL_DATABASE_PORT}
+              - name: CP_ENVIRONMENT
+                value: ${CP_ENVIRONMENT}
+              - name: INSTALL_DRUPAL
+                value: ${INSTALL_DRUPAL}
+              - name: DRUPAL_ADMIN_USERNAME
+                value: ${DRUPAL_ADMIN_USERNAME}
+              - name: DRUPAL_ADMIN_PASSWORD
+                value: ${DRUPAL_ADMIN_PASSWORD}
+              - name: DEVELOPMENT_MODE
+                value: ${DEVELOPMENT_MODE}
+            ports:
+              - 80
+            resources:
+              requests:
+                cpu: 50m
+                memory: 500Mi
+              limits:
+                cpu: 1
+                memory: 2G
+
+
 pipelines:
   - name: Remote development
     condition: code_reference.branch matches "/^cpdev/"
     tasks: &default_tasks
       - images
       - db_deployment
+      - web_deployment
     variables:
       - name: CP_ENVIRONMENT
         value: dev
