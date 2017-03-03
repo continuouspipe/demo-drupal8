@@ -26,4 +26,9 @@ docroot/sites/simpletest
 /.idea/
 
 # Ignore any node_modules dirctories
-node_modules
+node_modules.cp-remote-env-settings.yml
+/workspace/continuouspipe/demo-drupal8/cp-remote-logs/
+
+# Ignore Continuous Pipe files/folders.
+cp-remote-logs/
+.cp-remote-env-settings.yml
