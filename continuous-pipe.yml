@@ -123,7 +123,7 @@ pipelines:
     tasks: &default_tasks
       - images
       - db_deployment
-      # - drupal_demo_install
+      - drupal_demo_install
       - web_deployment
     variables:
       - name: CP_ENVIRONMENT
