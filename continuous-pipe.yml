@@ -105,6 +105,16 @@ tasks:
                 cpu: 1
                 memory: 2G
 
+  drupal_demo_install:
+    run:
+      cluster: ${CLUSTER}
+      environment:
+        name: '"demo-drupal8-" ~ code_reference.branch'
+      image:
+        from_service: web
+      commands: container drupal_install
+      environment_variables: *default_web_variables
+
 
 pipelines:
   - name: Remote development
@@ -112,6 +122,7 @@ pipelines:
     tasks: &default_tasks
       - images
       - db_deployment
+      - drupal_demo_install
       - web_deployment
     variables:
       - name: CP_ENVIRONMENT
