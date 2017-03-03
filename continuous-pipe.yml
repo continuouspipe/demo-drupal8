@@ -112,7 +112,8 @@ tasks:
         name: '"demo-drupal8-" ~ code_reference.branch'
       image:
         from_service: web
-      commands: container drupal_install
+      commands:
+        - container drupal_install
       environment_variables: *default_web_variables
 
 
