@@ -1,34 +1,46 @@
 version: '2'
 services:
+  proxy:
+    image: quay.io/continuouspipe/nginx-reverse-proxy:stable
+    links:
+      - varnish
+    environment:
+      PROXY_LOCATIONS: '[{"location": "/", "backend": "http://varnish", "preserve_host": true}]'
+      WEB_HTTPS_ONLY: true
+    expose:
+      - 80
+      - 443
+
+  varnish:
+    image: quay.io/continuouspipe/drupal8-varnish4:stable
+    links:
+      - web
+    expose:
+      - 80
+
   web:
     build:
       context: .
       args:
         - GITHUB_TOKEN
-        - CODE_OWNER=build
-        - CODE_GROUP=build
-        - APP_USER=www-data
-        - APP_GROUP=www-data
+    volumes:
+      - .:/app
     links:
       - database
     environment:
-      - GITHUB_TOKEN
-      - WEB_HTTP=true
-      - WEB_HTTPS=false
       - DRUPAL_HASH_SALT=sosecret
-      - DRUPAL_DATABASE_NAME=drupaldb
-      - DRUPAL_DATABASE_USERNAME=drupal
-      - DRUPAL_DATABASE_PASSWORD=drupal
-      - DRUPAL_DATABASE_HOST=database
-      - DRUPAL_DATABASE_PORT=3306
-      - DEVELOPMENT_MODE=0
+      - DATABASE_NAME=drupaldb
+      - DATABASE_USER=drupal
+      - DATABASE_PASSWORD=drupal
       - DRUPAL_ADMIN_USERNAME=drupaluser
       - DRUPAL_ADMIN_PASSWORD=drupalpass
+      - WEB_HTTPS_OFFLOADED="true"
+      - WEB_HTTPS="false"
     expose:
       - 80
 
   database:
-    image: quay.io/continuouspipe/mysql5.6:v1.0
+    image: quay.io/continuouspipe/mysql5.6:stable
     environment:
       MYSQL_ROOT_PASSWORD: drupal
       MYSQL_DATABASE: drupaldb
