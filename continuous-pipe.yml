@@ -183,6 +183,19 @@ tasks:
                 cpu: 1
                 memory: 2G
 
+        varnish:
+          specification:
+            ports:
+              - 80
+            resources:
+              limits:
+                cpu: 50m
+                memory: 1Gi # Varnish is set to malloc,1g
+          deployment_strategy:
+            readiness_probe:
+              type: tcp
+              port: 80
+
   setup:
     run:
       image:
