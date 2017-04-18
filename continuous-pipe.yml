@@ -95,7 +95,7 @@ tasks:
                 host_suffix: '-demo-drupal8.continuouspipe.net'
 
           specification:
-            environment_variables:
+            environment_variables: &default_web_variables
               - name: AUTH_HTTP_ENABLED
                 value: false
               - name: AUTH_HTTP_HTPASSWD
