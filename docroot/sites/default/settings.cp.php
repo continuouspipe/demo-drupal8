@@ -7,12 +7,14 @@
  */
 
  $databases['default']['default'] = [
-    'database' => getenv('DRUPAL_DATABASE_NAME'),
-    'username' => getenv('DRUPAL_DATABASE_USERNAME'),
-    'password' => getenv('DRUPAL_DATABASE_PASSWORD'),
+    'database' => getenv('DATABASE_NAME'),
+    'username' => getenv('DATABASE_USER'),
+    'password' => getenv('DATABASE_PASSWORD'),
     'prefix' => '',
-    'host' => getenv('DRUPAL_DATABASE_HOST'),
-    'port' => getenv('DRUPAL_DATABASE_PORT'),
+    'host' => getenv('DATABASE_HOST'),
+    'port' => getenv('DATABASE_HOST_PORT'),
     'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
     'driver' => 'mysql',
 ];
+
+$settings['hash_salt'] = getenv('DRUPAL_HASH_SALT');
